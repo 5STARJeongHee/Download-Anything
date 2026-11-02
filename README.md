@@ -8,7 +8,18 @@
 
 ## 상태
 
-Phase 0(골격) 완료. 공유 링크 인식과 엔진 초기화까지 동작한다. 실제 다운로드는 Phase 1에서 붙인다. 진행 상황은 [checklist.md](checklist.md).
+Phase 1(MVP) 구현 완료, 에뮬레이터에서 확인했다. 공유 → 정보 조회 → 형식 선택(영상 최고/720p, 음악 m4a/mp3, 이미지) → 백그라운드 다운로드 → 갤러리·음악 폴더 저장까지 동작한다. arm64 실기기 확인은 남아 있다. 진행 상황은 [checklist.md](checklist.md).
+
+### 알려진 제한
+- **16KB 메모리 페이지 기기**에서는 내장 ffmpeg가 동작하지 않는다([youtubedl-android#365](https://github.com/yausername/youtubedl-android/issues/365)). 이때 앱은 영상·음성을 합치지 않는 형식으로 받고 mp3 변환을 숨긴다. 홈 하단에 "ffmpeg 없음"으로 표시된다.
+- Instagram, 연령 제한·비공개 콘텐츠는 로그인이 필요해 아직 받을 수 없다(Phase 2).
+
+## 설치와 사용
+
+1. `./gradlew assembleDebug`로 만든 `app/build/outputs/apk/debug/app-debug.apk`를 휴대폰에 설치한다(릴리스 서명은 아직 없음).
+2. 처음 실행하면 yt-dlp 엔진을 준비하고 최신 버전으로 업데이트한다(수십 초).
+3. YouTube·X·Pinterest 앱에서 **공유 → Download Anything로 받기**를 누르고 형식을 고른다.
+4. 저장 위치: `Movies/DownloadAnything`, `Music/DownloadAnything`, `Pictures/DownloadAnything`.
 
 ## 문서
 

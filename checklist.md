@@ -18,22 +18,23 @@
 - [x] GitHub 원격에 push
 
 ## Phase 1. MVP
-- [ ] `YtDlpEngine` 인터페이스 + youtubedl-android 구현 (getInfo, execute, cancel, update)
-- [ ] `YtDlpExtractor`: `VideoInfo` → `MediaInfo` 변환 + 테스트(가짜 엔진)
-- [ ] `XImageExtractor`: 임베드 API 토큰 계산·JSON 파싱 + 테스트(샘플 JSON)
-- [ ] `PinterestImageExtractor`: formats 없을 때 원본 이미지 선택 + 테스트
-- [ ] `ExtractorRouter`: 플랫폼별 순서, 폴백 + 테스트
-- [ ] `DownloadWorker`: foreground(dataSync) 알림, 진행률, 취소
-- [ ] `MediaStoreSaver`: Movies/Music/Pictures 하위 `DownloadAnything` 폴더에 저장
-- [ ] 공유 하단 시트 UI: 정보 조회 → 프리셋 선택 → 다운로드
-- [ ] 홈 화면: URL 입력, 진행 중 작업
-- [ ] 설정: yt-dlp 버전·수동 업데이트, 하루 1회 자동 업데이트, 법적 고지
-- [ ] 알림 권한(Android 13+) 요청
-- [ ] 실기기 확인: YouTube 영상
-- [ ] 실기기 확인: YouTube 음악(m4a/mp3)
-- [ ] 실기기 확인: X 사진 / X 영상
-- [ ] 실기기 확인: Pinterest 이미지 / Pinterest 영상
-- [ ] QuickJS로 YouTube JS 챌린지가 처리되는지 확인 (안 되면 context-notes에 대응 기록)
+- [x] `YtDlpEngine` + youtubedl-android 구현 (JSON 조회, 다운로드, 취소, nightly 업데이트, ffmpeg 검사)
+- [x] `YtDlpExtractor` + `YtDlpInfoParser`: 실제 응답 샘플로 테스트 (VideoInfo 대신 raw JSON 파싱)
+- [x] `XImageExtractor` + `XSyndicationParser`: 사진 원본 추출 + 테스트 (token은 고정값, context-notes 참고)
+- [x] Pinterest 이미지 핀: 별도 추출기 대신 파서에서 "Pinterest + 형식 없음 → 가장 큰 이미지" 처리
+- [x] `ExtractorRouter`: 플랫폼별 순서, 폴백, 병합 + 테스트
+- [x] `DownloadWorker`: foreground(dataSync) 알림, 진행률, 취소
+- [x] `MediaStoreSaver`: Movies/Music/Pictures 하위 `DownloadAnything` 폴더에 저장
+- [x] 공유 하단 시트 UI: 정보 조회 → 프리셋 선택 → 다운로드
+- [x] 홈 화면: URL 입력, 다운로드 목록(진행률·취소), 엔진 버전·수동 업데이트, 법적 고지 (설정 화면은 홈에 합침)
+- [x] 하루 1회 자동 업데이트, 첫 실행 시 업데이트
+- [x] 알림 권한(Android 13+) 요청
+- [x] ffmpeg 없는 기기(16KB 페이지)용 대체 형식과 mp3 숨김
+- [x] 에뮬레이터(x86_64, 16KB, ffmpeg 없음) 확인: YouTube 영상 720p, YouTube m4a, X 사진, X 영상, Pinterest 영상, 실패 화면, 홈 목록
+- [x] 에뮬레이터(x86_64, 4KB, ffmpeg 있음) 확인: YouTube 720p 합치기, mp3 변환, m4a, 다운로드 취소(프로세스 종료·임시 폴더 삭제)
+- [x] QuickJS로 YouTube JS 챌린지 처리 확인 (경고 없음, 최대 2160p)
+- [ ] **실제 Pinterest 이미지 핀 확인** (테스트는 합성 샘플뿐, 실제 이미지 핀 주소를 못 구함)
+- [ ] **arm64 실기기 확인** (사용자 휴대폰): 위 항목 전체, 특히 기기 페이지 크기에 따른 ffmpeg 유무
 - [ ] 릴리스 서명 설정, GitHub 릴리스에 APK 업로드
 
 ## Phase 2

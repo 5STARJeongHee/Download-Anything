@@ -29,10 +29,10 @@
 | 이미지 추출 | OkHttp + kotlinx.serialization | yt-dlp가 이미지를 못 받음(실측) |
 | 백그라운드 작업 | WorkManager + foreground(dataSync) | 앱을 닫아도 다운로드 계속 |
 | 저장 | 앱 전용 폴더에 받은 뒤 MediaStore로 복사 | scoped storage 대응 |
-| 빌드 | Gradle 9.8.2, AGP 9.5.0, Kotlin 2.4.21, compileSdk 36, minSdk 26, JDK 17 | 2026-11 기준 최신 안정판 |
+| 빌드 | Gradle 9.8.2, AGP 9.5.0, Kotlin 2.4.21, compileSdk 37, targetSdk 36, minSdk 29, JDK 17 | 2026-11 기준 최신 안정판 |
 | 테스트 | JUnit4 | domain/data 순수 로직 단위 테스트 |
 
-minSdk 26(Android 8.0)으로 잡는다. 본인·지인 기기 기준으로 충분하고 분기 코드가 줄어든다.
+minSdk 29(Android 10)로 잡는다. MediaStore `RELATIVE_PATH`를 바로 쓸 수 있어 구버전 저장 권한 분기가 없다(처음엔 26이었다가 Phase 1에서 바꿈, context-notes 참고).
 
 ## 3. 아키텍처
 
@@ -48,7 +48,7 @@ com.downloadanything
 │  └─ MediaExtractor  추출기 인터페이스
 ├─ data/
 │  ├─ ytdlp/          YtDlpEngine(youtubedl-android 래퍼), YtDlpExtractor
-│  ├─ image/          XImageExtractor(임베드 API), PinterestImageExtractor
+│  ├─ image/          XImageExtractor(임베드 API), ImageDownloader (Pinterest 이미지는 YtDlpInfoParser가 처리)
 │  ├─ ExtractorRouter URL → 추출기 선택, 실패 시 다음 추출기로 폴백
 │  └─ storage/        MediaStoreSaver
 ├─ work/              DownloadWorker(WorkManager, foreground 알림, 진행률)
@@ -92,7 +92,7 @@ com.downloadanything
 |---|---|
 | 공유 하단 시트 | 썸네일, 제목, 프리셋 버튼, 다운로드 버튼. 앱 본체를 열지 않음 |
 | 홈 | 큰 URL 입력칸(클립보드 붙여넣기 버튼), 진행 중 작업 목록 |
-| 설정 | yt-dlp 버전·업데이트, 기본 프리셋, 저장 폴더 안내, 라이선스 |
+| 설정 | 별도 화면 없이 홈 하단에 yt-dlp 버전·ffmpeg 유무·업데이트 버튼·법적 고지 |
 
 **디자인 방향**: "도구"답게 단단한 느낌. 진한 잉크색 배경에 형광 라임 강조색 하나, 굵은 산세리프 제목과 고정폭 숫자(진행률·용량). 진행률 막대를 화면의 주인공으로 둔다. 다크/라이트 둘 다 지원.
 
