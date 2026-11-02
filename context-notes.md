@@ -37,4 +37,21 @@
 
 ### URL 호스트는 정규식으로 뽑는다
 - 이유: `java.net.URI`는 쿼리의 `|`, 공백, 한글에서 예외를 던져 YouTube 링크도 OTHER로 판정됐다(코드 리뷰 지적, 테스트로 재현).
-- 추적 파라미터: `utm_*`, `fbclid`, `gclid`만 모든 사이트에서 지운다. `si`, `feature`, `igsh` 등은 알려진 플랫폼에서만 지운다. 일반 사이트에서는 기능용일 수 있기 때문이다.
+- 추적 파라미터: `utm_*`, `fbclid`, `gclid`만 모든 사이트에서 지운다.
+
+### minSdk 26 → 29로 변경
+- 이유: MediaStore `RELATIVE_PATH`가 API 29부터 있다. 26~28용 `WRITE_EXTERNAL_STORAGE`와 파일 경로 저장 분기를 따로 만들지 않는다. 개인용이라 Android 10 이상이면 충분하다.
+
+### 엔진 실측 (에뮬레이터 Pixel_10_Pro, Android 37 x86_64, 16KB 페이지)
+- `execute()`는 항상 `--js-runtimes quickjs:<libqjs.so>`와 `--ffmpeg-location`을 붙인다(AAR 바이트코드 확인). `--cache-dir`이 없으면 `--no-cache-dir`을 붙이므로 앱이 캐시 폴더를 지정한다.
+- 내장 yt-dlp 2025.11.12에 `yt_dlp_ejs-0.3.1` 포함, `JS runtimes: quickjs` 인식. YouTube 정보 조회 성공(형식 39개, 최대 2160p). 따라서 `--remote-components`는 넣지 않는다.
+- 내장 버전으로는 실제 다운로드가 `HTTP 403`. `updateYoutubeDL(NIGHTLY)` 후(2026.10.29) 다운로드 성공. → **첫 실행 시 업데이트는 필수.**
+- 에뮬레이터 Doze(`Device idle: true`) 상태에서는 앱 uid의 DNS가 막혀 `[Errno 7]`가 난다. 확인 전 `dumpsys deviceidle disable`.
+- **16KB 페이지 기기에서 ffmpeg 실행 불가.** `libffmpeg.zip.so` 안의 libwebp 계열 5개가 4KB 정렬(youtubedl-android #365, 미해결). yt-dlp는 "ffmpeg not found"로 처리하고 앱은 죽지 않는다.
+  - 대응: 앱 시작 시 ffmpeg 실행 가능 여부를 검사하고, 없으면 합치기·변환이 없는 형식으로 바꾼다(영상 `-f b`, 음악 m4a 원본). mp3는 숨긴다.
+  - ffmpeg가 필요한 기능은 4KB 이미지(android-36 google_apis x86_64)로 확인한다.
+- 일부 YouTube 영상(jNQXAC9IVRU, BaW_jenozKc)은 이 네트워크에서 "This video is unavailable". 데스크톱 최신 yt-dlp도 같다. 앱 문제 아님.
+
+### 디버그 전용 확인 도구 EngineProbeReceiver
+- `app/src/debug`에만 있어 릴리스에 들어가지 않는다. stderr 전체를 보려고 youtubedl-android를 직접 호출한다(CLAUDE.md 3절 "엔진 호출은 한 곳" 규칙의 디버그 예외).
+- 사용: `adb shell am broadcast -f 32 -n com.downloadanything/.EngineProbeReceiver --es url "'<URL>'" --es args "'--verbose --dump-single-json'"` 또는 `--es action update`. `si`, `feature`, `igsh` 등은 알려진 플랫폼에서만 지운다. 일반 사이트에서는 기능용일 수 있기 때문이다.

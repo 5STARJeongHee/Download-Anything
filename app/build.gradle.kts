@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -10,7 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.downloadanything"
-        minSdk = 26
+        // MediaStore RELATIVE_PATH(API 29)로 저장해 구버전 저장 권한 분기를 없앤다.
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
@@ -20,6 +22,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            // PC 에뮬레이터(x86_64)에서 실제 다운로드를 확인하기 위해 디버그 빌드에만 추가한다.
+            ndk { abiFilters += "x86_64" }
+        }
         release {
             isMinifyEnabled = false
         }
@@ -45,14 +51,21 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.work.runtime)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.youtubedl.library)
     implementation(libs.youtubedl.ffmpeg)
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
