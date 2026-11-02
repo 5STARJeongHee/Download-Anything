@@ -1,0 +1,18 @@
+# Gradle / 빌드 산출물
+.gradle/
+build/
+/app/build/
+.kotlin/
+
+# 로컬 설정, 비밀값
+local.properties
+keystore.properties
+*.jks
+*.keystore
+cookies*.txt
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+captures/
