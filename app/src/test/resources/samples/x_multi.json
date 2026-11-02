@@ -1,0 +1,192 @@
+{
+ "_type": "playlist",
+ "id": "1600649710662213632",
+ "title": "Jocelyn Laidlaw - How Kirstie Alley's tragic death inspired me to share more about my c...",
+ "extractor_key": "Twitter",
+ "thumbnails": [],
+ "formats": [],
+ "entries": [
+  {
+   "id": "1600649511827038209",
+   "title": "Jocelyn Laidlaw - How Kirstie Alley's tragic death inspired me to share more about my c... #1",
+   "extractor_key": "Twitter",
+   "_has_drm": null,
+   "duration": 113.49,
+   "thumbnail": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827038209/pu/img/cIwECXrcksPr3txT.jpg?name=orig",
+   "ext": "mp4",
+   "url": "https://video.twimg.com/ext_tw_video/1600649511827038209/pu/vid/720x1280/Gmnz36SAOTrDTzrK.mp4?tag=12",
+   "thumbnails": [
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827038209/pu/img/cIwECXrcksPr3txT.jpg?name=small",
+     "width": 383,
+     "height": 680
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827038209/pu/img/cIwECXrcksPr3txT.jpg?name=medium",
+     "width": 675,
+     "height": 1200
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827038209/pu/img/cIwECXrcksPr3txT.jpg?name=large",
+     "width": 720,
+     "height": 1280
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827038209/pu/img/cIwECXrcksPr3txT.jpg?name=orig",
+     "width": 720,
+     "height": 1280
+    }
+   ],
+   "formats": [
+    {
+     "format_id": "hls-audio-32000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "hls-audio-64000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "hls-audio-128000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "http-632",
+     "ext": "mp4",
+     "height": 568,
+     "width": 320
+    },
+    {
+     "format_id": "hls-289",
+     "ext": "mp4",
+     "vcodec": "avc1.4D401E",
+     "acodec": "none",
+     "height": 568,
+     "width": 320
+    },
+    {
+     "format_id": "http-950",
+     "ext": "mp4",
+     "height": 852,
+     "width": 480
+    },
+    {
+     "format_id": "hls-582",
+     "ext": "mp4",
+     "vcodec": "avc1.4D401F",
+     "acodec": "none",
+     "height": 852,
+     "width": 480
+    },
+    {
+     "format_id": "http-2176",
+     "ext": "mp4",
+     "height": 1280,
+     "width": 720
+    },
+    {
+     "format_id": "hls-1150",
+     "ext": "mp4",
+     "vcodec": "avc1.640028",
+     "acodec": "none",
+     "height": 1280,
+     "width": 720
+    }
+   ]
+  },
+  {
+   "id": "1600649511827013632",
+   "title": "Jocelyn Laidlaw - How Kirstie Alley's tragic death inspired me to share more about my c... #2",
+   "extractor_key": "Twitter",
+   "_has_drm": null,
+   "duration": 102.226,
+   "thumbnail": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827013632/pu/img/oJkgm4vj0COsEGqT.jpg?name=orig",
+   "ext": "mp4",
+   "url": "https://video.twimg.com/ext_tw_video/1600649511827013632/pu/vid/720x1280/0B2s_vOTOwfpz4m8.mp4?tag=12",
+   "thumbnails": [
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827013632/pu/img/oJkgm4vj0COsEGqT.jpg?name=small",
+     "width": 383,
+     "height": 680
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827013632/pu/img/oJkgm4vj0COsEGqT.jpg?name=medium",
+     "width": 675,
+     "height": 1200
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827013632/pu/img/oJkgm4vj0COsEGqT.jpg?name=large",
+     "width": 720,
+     "height": 1280
+    },
+    {
+     "url": "https://pbs.twimg.com/ext_tw_video_thumb/1600649511827013632/pu/img/oJkgm4vj0COsEGqT.jpg?name=orig",
+     "width": 720,
+     "height": 1280
+    }
+   ],
+   "formats": [
+    {
+     "format_id": "hls-audio-32000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "hls-audio-64000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "hls-audio-128000-Audio",
+     "ext": "mp4",
+     "vcodec": "none"
+    },
+    {
+     "format_id": "http-632",
+     "ext": "mp4",
+     "height": 568,
+     "width": 320
+    },
+    {
+     "format_id": "hls-285",
+     "ext": "mp4",
+     "vcodec": "avc1.4D401E",
+     "acodec": "none",
+     "height": 568,
+     "width": 320
+    },
+    {
+     "format_id": "http-950",
+     "ext": "mp4",
+     "height": 852,
+     "width": 480
+    },
+    {
+     "format_id": "hls-575",
+     "ext": "mp4",
+     "vcodec": "avc1.4D401F",
+     "acodec": "none",
+     "height": 852,
+     "width": 480
+    },
+    {
+     "format_id": "http-2176",
+     "ext": "mp4",
+     "height": 1280,
+     "width": 720
+    },
+    {
+     "format_id": "hls-1161",
+     "ext": "mp4",
+     "vcodec": "avc1.640028",
+     "acodec": "none",
+     "height": 1280,
+     "width": 720
+    }
+   ]
+  }
+ ]
+}

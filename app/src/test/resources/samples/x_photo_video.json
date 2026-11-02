@@ -1,0 +1,92 @@
+{
+ "_type": "video",
+ "id": "1577855447914409984",
+ "title": "Oshtru - gm ✨️ now I can post image and video. nice update.",
+ "extractor_key": "Twitter",
+ "_has_drm": null,
+ "duration": 30.03,
+ "thumbnail": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg?name=orig",
+ "ext": "mp4",
+ "url": "https://video.twimg.com/ext_tw_video/1577855447914409984/pu/vid/720x900/Dn3XhZkvCK_gMg0d.mp4?tag=12",
+ "thumbnails": [
+  {
+   "url": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg?name=small",
+   "width": 544,
+   "height": 680
+  },
+  {
+   "url": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg?name=large",
+   "width": 720,
+   "height": 900
+  },
+  {
+   "url": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg?name=medium",
+   "width": 720,
+   "height": 900
+  },
+  {
+   "url": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg?name=orig",
+   "width": 720,
+   "height": 900
+  }
+ ],
+ "formats": [
+  {
+   "format_id": "hls-audio-32000-Audio",
+   "ext": "mp4",
+   "vcodec": "none"
+  },
+  {
+   "format_id": "hls-audio-64000-Audio",
+   "ext": "mp4",
+   "vcodec": "none"
+  },
+  {
+   "format_id": "hls-audio-128000-Audio",
+   "ext": "mp4",
+   "vcodec": "none"
+  },
+  {
+   "format_id": "http-632",
+   "ext": "mp4",
+   "height": 400,
+   "width": 320
+  },
+  {
+   "format_id": "hls-138",
+   "ext": "mp4",
+   "vcodec": "avc1.4D4015",
+   "acodec": "none",
+   "height": 400,
+   "width": 320
+  },
+  {
+   "format_id": "http-950",
+   "ext": "mp4",
+   "height": 600,
+   "width": 480
+  },
+  {
+   "format_id": "hls-253",
+   "ext": "mp4",
+   "vcodec": "avc1.4D401F",
+   "acodec": "none",
+   "height": 600,
+   "width": 480
+  },
+  {
+   "format_id": "http-2176",
+   "ext": "mp4",
+   "height": 900,
+   "width": 720
+  },
+  {
+   "format_id": "hls-473",
+   "ext": "mp4",
+   "vcodec": "avc1.640028",
+   "acodec": "none",
+   "height": 900,
+   "width": 720
+  }
+ ]
+}

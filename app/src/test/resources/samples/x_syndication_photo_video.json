@@ -1,0 +1,19 @@
+{
+ "__typename": "Tweet",
+ "id_str": "1577855540407197696",
+ "text": "sample tweet text https://t.co/abc",
+ "user": {
+  "name": "Sample User",
+  "screen_name": "sample_user"
+ },
+ "mediaDetails": [
+  {
+   "type": "photo",
+   "media_url_https": "https://pbs.twimg.com/media/FeWrKrMaYAELAxK.jpg"
+  },
+  {
+   "type": "video",
+   "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg"
+  }
+ ]
+}

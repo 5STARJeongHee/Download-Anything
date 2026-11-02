@@ -1,0 +1,33 @@
+{
+ "_type": "video",
+ "id": "664281013778109217",
+ "title": "synthetic image pin",
+ "extractor_key": "Pinterest",
+ "_has_drm": null,
+ "duration": 57.7,
+ "thumbnail": "https://i.pinimg.com/originals/51/22/2f/51222f3f14989389747aacf6db955563.jpg",
+ "ext": "mp4",
+ "thumbnails": [
+  {
+   "url": "https://i.pinimg.com/564x/51/22/2f/51222f3f14989389747aacf6db955563.jpg",
+   "width": 564,
+   "height": 1002
+  },
+  {
+   "url": "https://i.pinimg.com/600x315/51/22/2f/51222f3f14989389747aacf6db955563.jpg",
+   "width": 600,
+   "height": 315
+  },
+  {
+   "url": "https://i.pinimg.com/736x/51/22/2f/51222f3f14989389747aacf6db955563.jpg",
+   "width": 736,
+   "height": 1308
+  },
+  {
+   "url": "https://i.pinimg.com/originals/51/22/2f/51222f3f14989389747aacf6db955563.jpg",
+   "width": 1080,
+   "height": 1920
+  }
+ ],
+ "formats": []
+}

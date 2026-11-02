@@ -1,0 +1,140 @@
+{
+ "_type": "video",
+ "id": "aqz-KE-bpKQ",
+ "title": "Big Buck Bunny 60fps 4K - Official Blender Foundation Short Film",
+ "extractor_key": "Youtube",
+ "_has_drm": null,
+ "duration": 635,
+ "thumbnail": "https://i.ytimg.com/vi_webp/aqz-KE-bpKQ/maxresdefault.webp",
+ "ext": "mp4",
+ "vcodec": "av01.0.13M.08",
+ "acodec": "mp4a.40.2",
+ "thumbnails": [
+  {
+   "url": "https://i.ytimg.com/vi/aqz-KE-bpKQ/hq720.jpg",
+   "preference": -3
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aqz-KE-bpKQ/hq720.webp",
+   "preference": -2
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg",
+   "width": 1280,
+   "height": 720,
+   "preference": -1
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aqz-KE-bpKQ/maxresdefault.webp",
+   "width": 1920,
+   "height": 1080,
+   "preference": 0
+  }
+ ],
+ "formats": [
+  {
+   "format_id": "sb3",
+   "ext": "mhtml",
+   "vcodec": "none",
+   "acodec": "none",
+   "height": 27,
+   "width": 48
+  },
+  {
+   "format_id": "sb2",
+   "ext": "mhtml",
+   "vcodec": "none",
+   "acodec": "none",
+   "height": 45,
+   "width": 80
+  },
+  {
+   "format_id": "sb1",
+   "ext": "mhtml",
+   "vcodec": "none",
+   "acodec": "none",
+   "height": 90,
+   "width": 160
+  },
+  {
+   "format_id": "sb0",
+   "ext": "mhtml",
+   "vcodec": "none",
+   "acodec": "none",
+   "height": 180,
+   "width": 320
+  },
+  {
+   "format_id": "139-drc",
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.5",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "249-drc",
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "139",
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.5",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "249",
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "256",
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.5",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "140-drc",
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.2",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "251-drc",
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "140",
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.2",
+   "height": null,
+   "width": null
+  },
+  {
+   "format_id": "315",
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "height": 2160,
+   "width": 3840
+  }
+ ]
+}
