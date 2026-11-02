@@ -21,13 +21,18 @@ class ImageDownloader(private val client: OkHttpClient) {
     ) = withContext(Dispatchers.IO) {
         images.forEachIndexed { index, image ->
             ensureActive()
+            if (!image.url.startsWith(HTTPS_PREFIX)) throw IOException("https가 아닌 이미지 주소: ${image.url}")
             val baseName = if (images.size == 1) title else "$title ${index + 1}"
             val file = File(outputDir, FileNamer.build(baseName, image.extension))
-            client.newCall(Request.Builder().url(image.url).build()).execute().use { response ->
+            client.newCall(Request.Builder().url(image.url).build()).await().use { response ->
                 if (!response.isSuccessful) throw IOException("이미지 응답 ${response.code}: ${image.url}")
                 response.body.byteStream().use { input -> file.outputStream().use { input.copyTo(it) } }
             }
             onProgress(index + 1, images.size)
         }
+    }
+
+    private companion object {
+        const val HTTPS_PREFIX = "https://"
     }
 }

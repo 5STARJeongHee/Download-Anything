@@ -9,6 +9,7 @@ import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.yausername.youtubedl_android.YoutubeDLResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,10 +17,15 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 class YoutubeDlAndroidEngine(private val context: Context) : YtDlpEngine {
 
     private val initMutex = Mutex()
+
+    // 업데이트는 yt-dlp 파일을 바꾸므로 실행 중인 작업이 끝날 때까지 기다리고, 업데이트 중에는 새 실행을 막는다.
+    private val updateGate = Mutex()
+    private val activeRuns = AtomicInteger(0)
 
     @Volatile
     private var isInitialized = false
@@ -52,9 +58,10 @@ class YoutubeDlAndroidEngine(private val context: Context) : YtDlpEngine {
         run(request, onProgress)
     }
 
-    override suspend fun update(): UpdateResult {
+    override suspend fun update(): UpdateResult = updateGate.withLock {
         ensureInitialized()
-        return withContext(Dispatchers.IO) {
+        while (activeRuns.get() > 0) delay(RUN_POLL_MILLIS)
+        withContext(Dispatchers.IO) {
             val status = try {
                 YoutubeDL.getInstance().updateYoutubeDL(context, YoutubeDL.UpdateChannel.NIGHTLY)
             } catch (e: YoutubeDLException) {
@@ -109,6 +116,7 @@ class YoutubeDlAndroidEngine(private val context: Context) : YtDlpEngine {
         ensureInitialized()
         request.addOption("--cache-dir", cacheDir.absolutePath)
         val processId = UUID.randomUUID().toString()
+        updateGate.withLock { activeRuns.incrementAndGet() }
         return try {
             // execute()는 블로킹이라 취소되면 스레드를 인터럽트하고 아래에서 프로세스를 직접 끝낸다.
             runInterruptible(Dispatchers.IO) {
@@ -121,6 +129,8 @@ class YoutubeDlAndroidEngine(private val context: Context) : YtDlpEngine {
             throw CancellationException("yt-dlp 작업이 취소됨").apply { initCause(e) }
         } catch (e: YoutubeDLException) {
             throw EngineException(e.message ?: "yt-dlp 실행 실패", e)
+        } finally {
+            activeRuns.decrementAndGet()
         }
     }
 
@@ -130,5 +140,6 @@ class YoutubeDlAndroidEngine(private val context: Context) : YtDlpEngine {
         const val PACKAGES_DIR = "youtubedl-android/packages"
         const val FFMPEG_BINARY = "libffmpeg.so"
         const val FFMPEG_CHECK_TIMEOUT_SECONDS = 10L
+        const val RUN_POLL_MILLIS = 500L
     }
 }

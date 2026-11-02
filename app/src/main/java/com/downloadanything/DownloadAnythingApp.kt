@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -55,17 +56,25 @@ class DownloadAnythingApp : Application() {
     }
 
     /** 엔진이 준비될 때까지 기다린다. 준비에 실패했으면 예외를 던진다. */
-    suspend fun awaitReadyEngine(): EngineState.Ready =
-        when (val state = engineState.first { it is EngineState.Ready || it is EngineState.Failed }) {
+    suspend fun awaitReadyEngine(): EngineState.Ready {
+        val state = withTimeoutOrNull(ENGINE_WAIT_MILLIS) {
+            engineState.first { it is EngineState.Ready || it is EngineState.Failed }
+        } ?: throw MediaUnavailableException(FailureReason.UNKNOWN, "엔진 준비 시간 초과")
+        return when (state) {
             is EngineState.Ready -> state
             is EngineState.Failed -> throw MediaUnavailableException(FailureReason.UNKNOWN, "엔진 준비 실패: ${state.message}")
             EngineState.Initializing, is EngineState.Updating -> error("도달할 수 없음")
         }
+    }
 
     /** 사용자가 누른 엔진 업데이트. 준비에 실패한 상태였다면 처음부터 다시 준비한다. */
     fun requestEngineUpdate() {
         // 바로 Updating으로 바꿔서, 직후에 awaitReadyEngine()을 부른 쪽이 옛 Ready를 보지 않게 한다.
-        (engineState.value as? EngineState.Ready)?.let { mutableEngineState.value = EngineState.Updating(it.version) }
+        when (val state = engineState.value) {
+            is EngineState.Ready -> mutableEngineState.value = EngineState.Updating(state.version)
+            is EngineState.Failed -> mutableEngineState.value = EngineState.Initializing
+            EngineState.Initializing, is EngineState.Updating -> return
+        }
         appScope.launch {
             engineMutex.withLock {
                 when (val state = engineState.value) {
@@ -77,8 +86,8 @@ class DownloadAnythingApp : Application() {
                             isUpdateFailed = lastUpdateFailed,
                         )
                     }
-                    is EngineState.Failed -> prepare(forceUpdate = true)
-                    EngineState.Initializing, is EngineState.Ready -> Unit
+                    EngineState.Initializing -> prepare(forceUpdate = true)
+                    is EngineState.Failed, is EngineState.Ready -> Unit
                 }
             }
         }
@@ -116,7 +125,7 @@ class DownloadAnythingApp : Application() {
             result.version
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             logError("yt-dlp 업데이트 실패", e)
             lastUpdateFailed = true
             null
@@ -136,5 +145,8 @@ class DownloadAnythingApp : Application() {
         const val KEY_LAST_UPDATED_AT = "last_updated_at"
         const val CONNECT_TIMEOUT_SECONDS = 15L
         const val READ_TIMEOUT_SECONDS = 30L
+
+        // 첫 실행 업데이트까지 포함해도 넉넉한 시간
+        const val ENGINE_WAIT_MILLIS = 3 * 60 * 1000L
     }
 }

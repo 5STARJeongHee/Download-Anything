@@ -17,6 +17,8 @@ import com.downloadanything.domain.model.DownloadRequest
 import com.downloadanything.domain.model.FailureReason
 import com.downloadanything.domain.model.MediaUnavailableException
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -27,15 +29,19 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
     @Volatile
     private var lastPercent = -1
 
+    @Volatile
+    private var isForeground = false
+
     override suspend fun doWork(): Result {
         val request = DownloadRequestCodec.decode(inputData.keyValueMap) ?: return Result.failure()
-        setForeground(notifications.progressInfo(id, request.title, percent = null))
+        tryStartForeground(request.title)
         setProgress(workDataOf(KEY_TITLE to request.title, KEY_PROGRESS to 0))
         val workDir = File(applicationContext.cacheDir, "$WORK_DIR_NAME/$id")
         return try {
             workDir.mkdirs()
             val category = DownloadOutputs.categoryFor(request.preset)
-            val saved = fetch(request, workDir).map { app.mediaStoreSaver.save(it, category) }
+            val files = fetch(request, workDir)
+            val saved = withContext(Dispatchers.IO) { files.map { app.mediaStoreSaver.save(it, category) } }
             notifications.showCompleted(id, request.title, saved)
             Result.success(workDataOf(KEY_TITLE to request.title, KEY_SAVED_COUNT to saved.size))
         } catch (e: CancellationException) {
@@ -47,6 +53,17 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
             Result.failure(workDataOf(KEY_TITLE to request.title, KEY_FAILURE to reason.name))
         } finally {
             workDir.deleteRecursively()
+        }
+    }
+
+    // 네트워크를 기다리던 작업이 앱이 백그라운드일 때 시작되면 Android 12+가 foreground 전환을 거부한다.
+    // 그때는 알림 없이 계속 진행한다(작업 자체는 WorkManager가 유지한다).
+    private suspend fun tryStartForeground(title: String) {
+        try {
+            setForeground(notifications.progressInfo(id, title, percent = null))
+            isForeground = true
+        } catch (e: IllegalStateException) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "foreground 전환 거부됨", e)
         }
     }
 
@@ -81,7 +98,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
         if (value == lastPercent) return
         lastPercent = value
         setProgressAsync(workDataOf(KEY_TITLE to title, KEY_PROGRESS to value))
-        setForegroundAsync(notifications.progressInfo(id, title, value))
+        if (isForeground) setForegroundAsync(notifications.progressInfo(id, title, value))
     }
 
     companion object {

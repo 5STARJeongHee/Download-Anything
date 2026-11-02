@@ -41,8 +41,8 @@ class ShareActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val sharedText = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString().orEmpty()
         val link = UrlParser.parse(sharedText)
-        // 화면 회전 등으로 다시 만들어질 때 중복 조회하지 않는다.
-        if (link != null && savedInstanceState == null) viewModel.load(link)
+        // 화면 회전 때는 ViewModel이 남아 있어 중복 조회하지 않고, 프로세스가 다시 시작됐으면 다시 조회한다.
+        if (link != null && viewModel.state.value is LinkUiState.Idle) viewModel.load(link)
         setContent {
             DownloadAnythingTheme {
                 RequestNotificationPermission()

@@ -18,7 +18,7 @@ class XImageExtractor(private val client: OkHttpClient) : MediaExtractor {
         val id = XSyndicationParser.tweetId(link.url)
             ?: throw MediaUnavailableException(FailureReason.UNSUPPORTED_URL, "트윗 ID 없음")
         val request = Request.Builder().url("$ENDPOINT?id=$id&token=$TOKEN").build()
-        client.newCall(request).execute().use { response ->
+        client.newCall(request).await().use { response ->
             if (response.code == HTTP_NOT_FOUND) throw MediaUnavailableException(FailureReason.UNAVAILABLE)
             if (!response.isSuccessful) throw IOException("X 임베드 API 응답 ${response.code}")
             XSyndicationParser.parse(response.body.string(), link)
