@@ -15,7 +15,7 @@
 - [x] 공유 인텐트(`ACTION_SEND text/plain`) 수신 Activity 골격
 - [x] `./gradlew test assembleDebug` 통과 (단위 테스트 23개, 디버그 APK 64MB)
 - [ ] 실기기에 설치해 엔진 초기화(yt-dlp 버전 표시)와 공유 시트 확인
-- [ ] GitHub 원격에 push
+- [x] GitHub 원격에 push
 
 ## Phase 1. MVP
 - [ ] `YtDlpEngine` 인터페이스 + youtubedl-android 구현 (getInfo, execute, cancel, update)
