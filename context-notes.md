@@ -31,3 +31,10 @@
 
 ### minSdk 26
 - 이유: 본인·지인 기기 기준 충분. 알림 채널 등 구버전 분기를 없앤다.
+
+### compileSdk 37, targetSdk 36
+- 이유: Compose BOM 2026.09.00(Compose 1.12)의 AAR 메타데이터가 compileSdk 37 이상을 요구해 빌드가 실패했다. AGP가 platform 37을 자동 설치했다. targetSdk는 36으로 두어 동작 변경을 늦춘다.
+
+### URL 호스트는 정규식으로 뽑는다
+- 이유: `java.net.URI`는 쿼리의 `|`, 공백, 한글에서 예외를 던져 YouTube 링크도 OTHER로 판정됐다(코드 리뷰 지적, 테스트로 재현).
+- 추적 파라미터: `utm_*`, `fbclid`, `gclid`만 모든 사이트에서 지운다. `si`, `feature`, `igsh` 등은 알려진 플랫폼에서만 지운다. 일반 사이트에서는 기능용일 수 있기 때문이다.

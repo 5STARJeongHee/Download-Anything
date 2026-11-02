@@ -7,13 +7,14 @@
 - [x] yt-dlp 이미지 지원 실측 (X 사진, Pinterest 이미지 불가 확인)
 - [x] 설계 문서 (docs/design.md)
 - [x] 개발 규칙 (CLAUDE.md)
-- [ ] Gradle 프로젝트 골격 (wrapper, version catalog, app 모듈)
-- [ ] youtubedl-android 의존성 추가, 앱 시작 시 백그라운드 init
-- [ ] domain: `UrlParser` (URL 추출, 플랫폼 판별, 추적 파라미터 제거) + 테스트
-- [ ] domain: `DownloadPreset` → yt-dlp 인자 변환 `FormatSelector` + 테스트
-- [ ] domain: `FileNamer` + 테스트
-- [ ] 공유 인텐트(`ACTION_SEND text/plain`) 수신 Activity 골격
-- [ ] `./gradlew test assembleDebug` 통과
+- [x] Gradle 프로젝트 골격 (wrapper, version catalog, app 모듈)
+- [x] youtubedl-android 의존성 추가, 앱 시작 시 백그라운드 init
+- [x] domain: `UrlParser` (URL 추출, 플랫폼 판별, 추적 파라미터 제거) + 테스트
+- [x] domain: `DownloadPreset` → yt-dlp 인자 변환 `FormatSelector` + 테스트
+- [x] domain: `FileNamer` + 테스트
+- [x] 공유 인텐트(`ACTION_SEND text/plain`) 수신 Activity 골격
+- [x] `./gradlew test assembleDebug` 통과 (단위 테스트 23개, 디버그 APK 64MB)
+- [ ] 실기기에 설치해 엔진 초기화(yt-dlp 버전 표시)와 공유 시트 확인
 - [ ] GitHub 원격에 push
 
 ## Phase 1. MVP
