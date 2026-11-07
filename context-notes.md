@@ -88,3 +88,14 @@
 ### Phase 1 에뮬레이터 확인 결과
 - 16KB(Android 37, ffmpeg 없음): YouTube 720p(단일 파일), YouTube m4a, X 사진 원본, X 영상, Pinterest 영상 저장 성공. 404 페이지는 "볼 수 없음" 오류 화면.
 - 4KB(Android 36, ffmpeg 있음): YouTube 720p 영상+음성 합치기(102MB), mp3 변환, m4a(메타데이터·썸네일), 취소 시 Python 프로세스 종료·임시 폴더 삭제. `si`, `feature`, `igsh` 등은 알려진 플랫폼에서만 지운다. 일반 사이트에서는 기능용일 수 있기 때문이다.
+
+## 2026-11-07 (릴리스)
+
+### 릴리스 서명과 GitHub Actions 배포
+- 결정: `v*` 태그를 push하면 `.github/workflows/release.yml`이 테스트 → 서명된 release APK 빌드 → GitHub 릴리스 생성(APK + sha256)까지 한다.
+- 서명 값은 환경 변수(`SIGNING_STORE_FILE`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, `SIGNING_KEY_PASSWORD`)를 먼저 보고, 없으면 로컬 `keystore.properties`를 본다. 둘 다 없으면 release 서명 설정을 만들지 않아 debug 빌드는 그대로 된다.
+- CI의 키는 저장소 Secrets(`SIGNING_KEYSTORE_BASE64` 외 3개)에 둔다. 러너 임시 폴더에 복원하고 끝나면 지운다.
+- 키 파일은 저장소 밖(`%USERPROFILE%\keys\download-anything.jks`)에 두고 따로 백업한다. 키를 잃으면 설치된 앱을 업데이트할 수 없다.
+- 태그와 `versionName`이 다르면 워크플로가 실패한다. 버전을 올릴 때는 `versionCode`(+1)와 `versionName`을 함께 고친 뒤 태그를 단다.
+- 메모장이 `keystore.properties.txt`로 저장하는 일이 있어 `.gitignore`를 `keystore.properties*`로 넓혔다.
+- 대안: 로컬에서 빌드해 웹으로 수동 업로드. 이 PC에는 Android SDK가 없어 CI 쪽이 간단하다.

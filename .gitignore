@@ -6,7 +6,7 @@ build/
 
 # 로컬 설정, 비밀값
 local.properties
-keystore.properties
+keystore.properties*
 *.jks
 *.keystore
 cookies*.txt

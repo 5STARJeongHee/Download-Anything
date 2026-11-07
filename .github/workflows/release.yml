@@ -1,0 +1,76 @@
+# v* 태그를 push하면 테스트 → 서명된 release APK 빌드 → GitHub 릴리스 생성까지 한다.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: 태그와 versionName 일치 확인
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          if [ "v${VERSION_NAME}" != "${TAG}" ]; then
+            echo "::error::태그 ${TAG}와 versionName ${VERSION_NAME}이 다릅니다. app/build.gradle.kts를 먼저 올리세요."
+            exit 1
+          fi
+
+      - name: 서명 키 복원
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "${SIGNING_KEYSTORE_BASE64}" ]; then
+            echo "::error::저장소 Secrets에 SIGNING_KEYSTORE_BASE64가 없습니다."
+            exit 1
+          fi
+          echo "${SIGNING_KEYSTORE_BASE64}" | base64 -d > "${RUNNER_TEMP}/release.jks"
+          echo "SIGNING_STORE_FILE=${RUNNER_TEMP}/release.jks" >> "${GITHUB_ENV}"
+
+      - name: 테스트와 release 빌드
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew test assembleRelease
+
+      - name: 서명 확인과 파일 이름 정리
+        run: |
+          APK_IN=app/build/outputs/apk/release/app-release.apk
+          APK_OUT="DownloadAnything-${TAG}.apk"
+          APKSIGNER=$(ls "${ANDROID_HOME}"/build-tools/*/apksigner | sort -V | tail -1)
+          "${APKSIGNER}" verify --print-certs "${APK_IN}"
+          cp "${APK_IN}" "${APK_OUT}"
+          sha256sum "${APK_OUT}" > "${APK_OUT}.sha256"
+
+      - name: GitHub 릴리스 생성
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${TAG}" \
+            "DownloadAnything-${TAG}.apk" \
+            "DownloadAnything-${TAG}.apk.sha256" \
+            --title "${TAG}" \
+            --notes "개인 용도 전용입니다. 저작권과 각 서비스 약관을 지킬 책임은 사용자에게 있습니다." \
+            --generate-notes
+
+      - name: 서명 키 삭제
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/release.jks"

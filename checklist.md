@@ -35,7 +35,8 @@
 - [x] QuickJS로 YouTube JS 챌린지 처리 확인 (경고 없음, 최대 2160p)
 - [ ] **실제 Pinterest 이미지 핀 확인** (테스트는 합성 샘플뿐, 실제 이미지 핀 주소를 못 구함)
 - [ ] **arm64 실기기 확인** (사용자 휴대폰): 위 항목 전체, 특히 기기 페이지 크기에 따른 ffmpeg 유무
-- [ ] 릴리스 서명 설정, GitHub 릴리스에 APK 업로드
+- [x] 릴리스 서명 설정(Gradle, GitHub Actions 워크플로)
+- [ ] GitHub Secrets 등록 후 첫 태그(v0.1.0)로 릴리스 APK 업로드 확인
 
 ## Phase 2
 - [ ] 다운로드 기록(Room)

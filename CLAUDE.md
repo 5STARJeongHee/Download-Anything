@@ -21,7 +21,7 @@
 
 | 항목 | 값 |
 |---|---|
-| JDK | 17 (`C:\Program Files\Eclipse Adoptium\jdk-17.0.12.7-hotspot`) |
+| JDK | 17 (Oracle JDK 17.0.12, `C:\dev\jdk-17.0.12`) |
 | Android SDK | `%LOCALAPPDATA%\Android\Sdk` (`local.properties`의 `sdk.dir`) |
 | Gradle / AGP / Kotlin | `gradle/libs.versions.toml`, `gradle/wrapper/gradle-wrapper.properties` 참고 |
 | compileSdk / targetSdk / minSdk | 36 / 36 / 26 |

@@ -16,7 +16,7 @@ Phase 1(MVP) 구현 완료, 에뮬레이터에서 확인했다. 공유 → 정�
 
 ## 설치와 사용
 
-1. `./gradlew assembleDebug`로 만든 `app/build/outputs/apk/debug/app-debug.apk`를 휴대폰에 설치한다(릴리스 서명은 아직 없음).
+1. [Releases](https://github.com/5STARJeongHee/Download-Anything/releases)에서 `DownloadAnything-vX.Y.Z.apk`를 받아 휴대폰에 설치한다. 직접 빌드할 때는 `./gradlew assembleDebug`로 만든 `app/build/outputs/apk/debug/app-debug.apk`를 쓴다.
 2. 처음 실행하면 yt-dlp 엔진을 준비하고 최신 버전으로 업데이트한다(수십 초).
 3. YouTube·X·Pinterest 앱에서 **공유 → Download Anything로 받기**를 누르고 형식을 고른다.
 4. 저장 위치: `Movies/DownloadAnything`, `Music/DownloadAnything`, `Pictures/DownloadAnything`.

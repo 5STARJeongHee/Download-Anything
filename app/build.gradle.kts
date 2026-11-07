@@ -1,8 +1,22 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
+
+// 서명 값은 CI 환경 변수를 먼저 보고, 없으면 로컬 keystore.properties(gitignore)를 본다.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun signingValue(envName: String, propertyName: String): String? =
+    System.getenv(envName)?.takeIf { it.isNotBlank() }
+        ?: keystoreProperties.getProperty(propertyName)?.takeIf { it.isNotBlank() }
+
+val releaseStoreFile = signingValue("SIGNING_STORE_FILE", "storeFile")
 
 android {
     namespace = "com.downloadanything"
@@ -21,6 +35,18 @@ android {
         ndk { abiFilters += "arm64-v8a" }
     }
 
+    signingConfigs {
+        // 키가 없는 환경(새로 clone한 PC 등)에서도 debug 빌드는 되도록, 키가 있을 때만 만든다.
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = signingValue("SIGNING_STORE_PASSWORD", "storePassword")
+                keyAlias = signingValue("SIGNING_KEY_ALIAS", "keyAlias")
+                keyPassword = signingValue("SIGNING_KEY_PASSWORD", "keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // PC 에뮬레이터(x86_64)에서 실제 다운로드를 확인하기 위해 디버그 빌드에만 추가한다.
@@ -28,6 +54,7 @@ android {
         }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
