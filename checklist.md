@@ -45,5 +45,6 @@
 - [ ] 대기열, 동시 다운로드 수 설정
 - [ ] 플레이리스트
 - [x] 계정 연결(플랫폼 공통): X·Instagram·TikTok 앱 안 로그인, YouTube 포함 cookies.txt 가져오기, 연결된 플랫폼에만 `--cookies` + 테스트
+- [x] 계정 연결 에뮬레이터 확인: 로그인 화면 3종 표시, cookies.txt 가져오기, 자동 재조회, --cookies 전달 (실제 계정 로그인 제외)
 - [ ] **계정 연결 실기기 확인**: X 로그인 후 민감한 트윗 영상, Instagram 게시물, YouTube 연령 제한 영상
 - [ ] YouTube PO 토큰

@@ -131,3 +131,15 @@
 - 네트워크 대상: 로그인 화면은 사용자가 직접 조작하는 WebView라서 각 플랫폼의 로그인 페이지와 그 페이지가 부르는 인증·CDN·캡차 도메인에 접속한다. 앱 코드가 직접 부르는 새 도메인은 없다. http(s)가 아닌 주소(intent:// 등)로의 이동은 막는다.
 - 쿠키 파일은 `noBackupFilesDir/accounts/`(앱 전용, 백업 제외, `allowBackup=false`). 로그에 쿠키 값을 남기지 않는다.
 - 대안: 외부 중계 서비스(fxtwitter 등)는 네트워크 대상 규칙 위반이라 제외. 루팅해서 X 앱 토큰 읽기는 불가·부적절.
+
+### 로그인 화면이 검게 나오던 문제 (v0.1.3)
+- 증상: X 로그인 화면이 검은 배경과 뒤로 가기 화살표만 보이고 폼이 안 보였다.
+- 원인: Compose `AndroidView`로 만든 WebView의 기본 layoutParams가 wrap_content라서, 페이지의 `100dvh`가 0으로 계산됐다. X 로그인 폼은 `max-height: calc(100dvh - 32px)` 상자 안에 있어 높이 0이 됐다. 레이아웃 뒤에 loadUrl을 해도 같았고, layoutParams를 MATCH_PARENT로 주자 `100dvh`=775px로 정상이 됐다.
+- 놓친 이유: v0.1.3은 JVM 테스트와 빌드만 확인하고 실제 화면을 띄워 보지 않았다. 이후 화면이 있는 변경은 에뮬레이터에서 확인한다.
+
+### 2026-11-09 에뮬레이터 확인 (Android 16, x86_64, AVD `da36`)
+- X·Instagram·TikTok 로그인 화면이 모두 정상으로 그려진다. 로그인하지 않고 "완료"를 누르면 "로그인이 확인되지 않았습니다" 안내가 뜬다.
+- 공개 X 영상 트윗: 임베드 API mp4로 최고 화질 저장 성공(103MB).
+- 로그인 필요 트윗(tombstone): "로그인이 필요하거나 비공개 콘텐츠입니다" + "X 계정 연결" 버튼이 뜬다.
+- cookies.txt 가져오기(가짜 auth_token): 연결됨 표시, 실패했던 링크 자동 재조회, yt-dlp가 `--cookies` 파일을 읽고 다시 저장(126→415바이트). 실제 계정 로그인은 확인하지 못했다(계정 정보 없음).
+- 에뮬레이터: `%LOCALAPPDATA%\Android\Sdk`에 `emulator`, `system-images;android-36;google_apis;x86_64` 설치. WHPX 가속.

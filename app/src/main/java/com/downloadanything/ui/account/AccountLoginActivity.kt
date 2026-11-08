@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -91,6 +92,9 @@ class AccountLoginActivity : ComponentActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun createWebView(context: Context, url: String) = WebView(context).apply {
+        // AndroidView 기본값(wrap_content)이면 WebView가 페이지의 100vh·100dvh를 0으로 계산한다.
+        // X 로그인 폼은 max-height: calc(100dvh - 32px) 상자 안에 있어 높이 0으로 사라졌다.
+        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         // 일부 사이트는 WebView 표시("; wv")가 있으면 지원하지 않는 브라우저로 막는다.
