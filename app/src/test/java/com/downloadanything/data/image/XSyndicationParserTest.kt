@@ -2,12 +2,15 @@
 package com.downloadanything.data.image
 
 import com.downloadanything.TestSamples
+import com.downloadanything.domain.model.FailureReason
+import com.downloadanything.domain.model.MediaUnavailableException
 import com.downloadanything.domain.model.ParsedLink
 import com.downloadanything.domain.model.Platform
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class XSyndicationParserTest {
@@ -64,6 +67,16 @@ class XSyndicationParserTest {
         val info = XSyndicationParser.parse(raw, link)
         assertTrue(info.hasVideo)
         assertTrue(info.directVideos.isEmpty())
+    }
+
+    @Test
+    fun `tombstone tweet is reported as login required`() {
+        try {
+            XSyndicationParser.parse("""{"__typename":"TweetTombstone","tombstone":{}}""", link)
+            fail("숨겨진 트윗은 실패해야 한다")
+        } catch (e: MediaUnavailableException) {
+            assertEquals(FailureReason.LOGIN_REQUIRED, e.reason)
+        }
     }
 
     @Test

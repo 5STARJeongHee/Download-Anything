@@ -94,6 +94,42 @@ class ExtractorRouterTest {
     }
 
     @Test
+    fun `x login wall wins over yt-dlp empty result`() = runTest {
+        val loginWall = FakeExtractor { throw MediaUnavailableException(FailureReason.LOGIN_REQUIRED) }
+        assertReason(FailureReason.LOGIN_REQUIRED) { ExtractorRouter(FakeExtractor { media(xLink) }, loginWall).extract(xLink) }
+    }
+
+    @Test
+    fun `x login wall wins over yt-dlp unknown failure`() = runTest {
+        val loginWall = FakeExtractor { throw MediaUnavailableException(FailureReason.LOGIN_REQUIRED) }
+        val ytDlp = FakeExtractor { throw MediaUnavailableException(FailureReason.UNKNOWN) }
+        assertReason(FailureReason.LOGIN_REQUIRED) { ExtractorRouter(ytDlp, loginWall).extract(xLink) }
+    }
+
+    @Test
+    fun `x login wall keeps network failure`() = runTest {
+        val loginWall = FakeExtractor { throw MediaUnavailableException(FailureReason.LOGIN_REQUIRED) }
+        val ytDlp = FakeExtractor { throw MediaUnavailableException(FailureReason.NETWORK) }
+        assertReason(FailureReason.NETWORK) { ExtractorRouter(ytDlp, loginWall).extract(xLink) }
+    }
+
+    @Test
+    fun `x login wall still uses yt-dlp result when it has media`() = runTest {
+        val loginWall = FakeExtractor { throw MediaUnavailableException(FailureReason.LOGIN_REQUIRED) }
+        val info = ExtractorRouter(FakeExtractor { media(xLink, hasVideo = true) }, loginWall).extract(xLink)
+        assertTrue(info.hasVideo)
+    }
+
+    private suspend fun assertReason(expected: FailureReason, block: suspend () -> Unit) {
+        try {
+            block()
+            fail("$expected 로 실패해야 한다")
+        } catch (e: MediaUnavailableException) {
+            assertEquals(expected, e.reason)
+        }
+    }
+
+    @Test
     fun `empty result is reported as no media`() = runTest {
         try {
             ExtractorRouter(FakeExtractor { media(ytLink) }, FakeExtractor { media(xLink) }).extract(ytLink)

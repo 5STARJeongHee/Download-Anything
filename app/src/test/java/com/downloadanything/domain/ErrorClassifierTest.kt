@@ -16,6 +16,7 @@ class ErrorClassifierTest {
             "ERROR: [youtube] abc: Sign in to confirm your age. This video may be inappropriate" to FailureReason.LOGIN_REQUIRED,
             "ERROR: [instagram] abc: Requested content is not available, rate-limit reached or login required" to FailureReason.LOGIN_REQUIRED,
             "ERROR: [youtube] abc: Private video. Sign in if you've been granted access" to FailureReason.LOGIN_REQUIRED,
+            "ERROR: [twitter] 123: NSFW tweet requires authentication. Use --cookies" to FailureReason.LOGIN_REQUIRED,
             "ERROR: [youtube] jNQXAC9IVRU: This video is unavailable" to FailureReason.UNAVAILABLE,
             "ERROR: unable to download video data: HTTP Error 403: Forbidden" to FailureReason.BLOCKED,
             "ERROR: [youtube] abc: HTTP Error 429: Too Many Requests" to FailureReason.BLOCKED,

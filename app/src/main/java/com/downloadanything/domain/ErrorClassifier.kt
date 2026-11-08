@@ -9,7 +9,7 @@ object ErrorClassifier {
     private val RULES: List<Pair<FailureReason, List<String>>> = listOf(
         FailureReason.UNSUPPORTED_URL to listOf("unsupported url"),
         FailureReason.DRM to listOf("drm protected", "this video is drm"),
-        FailureReason.LOGIN_REQUIRED to listOf("sign in", "login required", "log in", "private video", "cookies"),
+        FailureReason.LOGIN_REQUIRED to listOf("sign in", "login required", "log in", "private video", "cookies", "requires authentication"),
         FailureReason.BLOCKED to listOf("http error 403", "http error 429", "too many requests"),
         FailureReason.NETWORK to listOf(
             "errno 7", "errno -2", "errno 101", "no address associated", "name or service not known",

@@ -1,7 +1,9 @@
 // X 임베드 API(tweet-result) 응답에서 사진과 영상(바로 받을 수 있는 mp4 주소)을 뽑는다
 package com.downloadanything.data.image
 
+import com.downloadanything.domain.model.FailureReason
 import com.downloadanything.domain.model.MediaInfo
+import com.downloadanything.domain.model.MediaUnavailableException
 import com.downloadanything.domain.model.ParsedLink
 import com.downloadanything.domain.model.RemoteImage
 import com.downloadanything.domain.model.RemoteVideo
@@ -20,6 +22,9 @@ object XSyndicationParser {
     private val RESOLUTION = Regex("""/(\d{2,5})x(\d{2,5})/""")
     private val VIDEO_TYPES = setOf("video", "animated_gif")
     private const val PHOTO_TYPE = "photo"
+
+    // 로그아웃 상태에 보여주지 않는 트윗(민감한 콘텐츠·연령 제한 등)이면 내용 없이 이 타입만 온다.
+    private const val TOMBSTONE_TYPENAME = "TweetTombstone"
     private const val MP4_CONTENT_TYPE = "video/mp4"
     private const val HTTPS_PREFIX = "https://"
     private const val ORIGINAL_SIZE_QUERY = "?name=orig"
@@ -30,6 +35,9 @@ object XSyndicationParser {
 
     fun parse(raw: String, link: ParsedLink): MediaInfo {
         val tweet = json.decodeFromString<TweetDto>(raw)
+        if (tweet.typename == TOMBSTONE_TYPENAME) {
+            throw MediaUnavailableException(FailureReason.LOGIN_REQUIRED, "X 임베드 API가 트윗을 숨김($TOMBSTONE_TYPENAME)")
+        }
         val photos = tweet.mediaDetails
             .filter { it.type == PHOTO_TYPE }
             .mapNotNull { it.mediaUrl }
@@ -69,6 +77,7 @@ object XSyndicationParser {
 
     @Serializable
     private data class TweetDto(
+        @SerialName("__typename") val typename: String? = null,
         @SerialName("id_str") val id: String? = null,
         val text: String? = null,
         val user: UserDto? = null,

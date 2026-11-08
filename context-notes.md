@@ -115,3 +115,9 @@
 ### 이 PC에 Android SDK 설치
 - `%LOCALAPPDATA%\Android\Sdk`에 cmdline-tools(16111833, SHA-1 확인), `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`를 설치했다. 이제 로컬에서 `./gradlew test assembleDebug`가 된다.
 - `local.properties`의 경로는 `C:/Users/...`처럼 슬래시로 쓴다. 역슬래시는 properties 이스케이프로 사라진다.
+
+### 로그아웃 상태에 숨겨진 X 트윗은 "로그인 필요"로 안내한다
+- 증상(v0.1.2 실기기): 특정 트윗에서 "받을 수 있는 영상·음악·이미지를 찾지 못했습니다" + 엔진 업데이트 버튼이 떴다.
+- 원인: 임베드 API가 `{"__typename":"TweetTombstone","tombstone":{}}`만 주고, oEmbed는 403 "not authorized to see this status"를 줬다. 민감한 콘텐츠·연령 제한처럼 로그인해야 보이는 트윗이다. yt-dlp도 미디어 없이 끝나 NO_MEDIA로 분류됐다.
+- 결정: 파서가 tombstone이면 `LOGIN_REQUIRED`를 던지고, 라우터는 yt-dlp가 미디어를 못 찾거나 실패하면(네트워크 오류 제외) `LOGIN_REQUIRED`로 바꾼다. yt-dlp의 "NSFW tweet requires authentication"도 같은 분류로 넣었다.
+- 이런 트윗을 실제로 받으려면 Phase 2의 로그인 쿠키(`--cookies`)가 필요하다. 외부 중계 서비스(fxtwitter 등)는 네트워크 대상 제한 규칙 때문에 쓰지 않는다.
