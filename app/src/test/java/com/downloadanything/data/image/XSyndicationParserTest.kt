@@ -34,9 +34,43 @@ class XSyndicationParserTest {
     }
 
     @Test
+    fun `video keeps only https mp4 variants with height from url`() {
+        val info = XSyndicationParser.parse(TestSamples.read("x_syndication_photo_video.json"), link)
+        assertEquals(1, info.directVideos.size)
+        val variants = info.directVideos[0].variants
+        assertEquals(3, variants.size)
+        assertTrue(variants.all { it.url.contains(".mp4") })
+        val best = variants.maxBy { it.bitrate }
+        assertEquals(2_176_000L, best.bitrate)
+        assertEquals(900, best.height)
+        assertEquals(30.03, info.durationSeconds!!, 0.001)
+    }
+
+    @Test
+    fun `animated gif mp4 without bitrate is a direct video`() {
+        val raw = """{"id_str":"2","mediaDetails":[{"type":"animated_gif","video_info":{"variants":[
+            {"bitrate":0,"content_type":"video/mp4","url":"https://video.twimg.com/tweet_video/abc.mp4"}]}}]}"""
+        val info = XSyndicationParser.parse(raw, link)
+        assertTrue(info.hasVideo)
+        assertEquals("https://video.twimg.com/tweet_video/abc.mp4", info.directVideos.single().variants.single().url)
+        assertNull(info.directVideos.single().variants.single().height)
+    }
+
+    @Test
+    fun `direct videos are dropped when any video lacks mp4`() {
+        val raw = """{"id_str":"3","mediaDetails":[
+            {"type":"video","video_info":{"variants":[{"bitrate":1,"content_type":"video/mp4","url":"https://video.twimg.com/a.mp4"}]}},
+            {"type":"video","video_info":{"variants":[{"content_type":"application/x-mpegURL","url":"https://video.twimg.com/b.m3u8"}]}}]}"""
+        val info = XSyndicationParser.parse(raw, link)
+        assertTrue(info.hasVideo)
+        assertTrue(info.directVideos.isEmpty())
+    }
+
+    @Test
     fun `tweet without media has nothing`() {
         val info = XSyndicationParser.parse("""{"id_str":"1","text":"hi","user":{"screen_name":"a"}}""", link)
         assertTrue(info.images.isEmpty())
         assertFalse(info.hasVideo)
+        assertTrue(info.directVideos.isEmpty())
     }
 }

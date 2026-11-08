@@ -8,6 +8,8 @@ import com.downloadanything.domain.model.MediaUnavailableException
 import com.downloadanything.domain.model.ParsedLink
 import com.downloadanything.domain.model.Platform
 import com.downloadanything.domain.model.RemoteImage
+import com.downloadanything.domain.model.RemoteVideo
+import com.downloadanything.domain.model.VideoVariant
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -28,10 +30,17 @@ class ExtractorRouterTest {
     private val xLink = ParsedLink("https://x.com/u/status/1", Platform.X)
     private val ytLink = ParsedLink("https://youtu.be/abc", Platform.YOUTUBE)
 
-    private fun media(link: ParsedLink, hasVideo: Boolean = false, images: Int = 0, title: String = "t") = MediaInfo(
+    private fun media(
+        link: ParsedLink,
+        hasVideo: Boolean = false,
+        images: Int = 0,
+        title: String = "t",
+        directVideos: Int = 0,
+    ) = MediaInfo(
         sourceUrl = link.url, platform = link.platform, title = title, thumbnailUrl = null, durationSeconds = null,
         hasVideo = hasVideo, hasAudio = hasVideo,
         images = List(images) { RemoteImage("https://pbs.twimg.com/$it.jpg?name=orig", "jpg") },
+        directVideos = List(directVideos) { RemoteVideo(listOf(VideoVariant("https://video.twimg.com/$it.mp4", 1, 720))) },
     )
 
     @Test
@@ -58,6 +67,16 @@ class ExtractorRouterTest {
         assertTrue(info.hasVideo)
         assertEquals(1, info.images.size)
         assertEquals("from yt-dlp", info.title)
+    }
+
+    @Test
+    fun `x video tweet with direct mp4 skips yt-dlp`() = runTest {
+        val ytDlp = FakeExtractor { error("호출되면 안 됨") }
+        val x = FakeExtractor { media(xLink, hasVideo = true, images = 1, directVideos = 2) }
+        val info = ExtractorRouter(ytDlp, x).extract(xLink)
+        assertEquals(2, info.directVideos.size)
+        assertEquals(1, info.images.size)
+        assertEquals(0, ytDlp.calls)
     }
 
     @Test

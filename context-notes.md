@@ -99,3 +99,19 @@
 - 태그와 `versionName`이 다르면 워크플로가 실패한다. 버전을 올릴 때는 `versionCode`(+1)와 `versionName`을 함께 고친 뒤 태그를 단다.
 - 메모장이 `keystore.properties.txt`로 저장하는 일이 있어 `.gitignore`를 `keystore.properties*`로 넓혔다.
 - 대안: 로컬에서 빌드해 웹으로 수동 업로드. 이 PC에는 Android SDK가 없어 CI 쪽이 간단하다.
+
+## 2026-11-08
+
+### X 영상은 임베드 API의 mp4를 직접 받는다
+- 증상: 실기기에서 X 영상을 받으면 "엔진을 업데이트" 안내가 뜨고, 업데이트해도 실패했다. 릴리스 빌드라 원본 yt-dlp 오류는 볼 수 없었다.
+- 결정: `cdn.syndication.twimg.com/tweet-result` 응답의 `mediaDetails[].video_info.variants` 중 `video/mp4`(https) 주소를 바로 받는다. 정보 조회 단계에서 mp4가 있으면 yt-dlp를 부르지 않는다. 직접 받기가 `IOException`으로 실패하면 yt-dlp로 한 번 더 받는다.
+- 이유: yt-dlp의 X 추출기는 게스트 토큰·GraphQL API에 기대서 X 쪽 변경에 자주 깨진다. 임베드 API는 이미 사진에 쓰고 있고 로그인 없이 동작하며, mp4 변형에는 소리가 들어 있어 ffmpeg 합치기도 필요 없다. 2026-11-08 PC에서 응답과 `video.twimg.com` mp4 200 응답을 확인했다.
+- 화질: 최고 화질은 bitrate가 가장 큰 것, 720p는 주소의 `/WxH/` 높이가 720 이하인 것 중 가장 좋은 것(없으면 최고). `FormatSelector`의 `b[height<=720]/b`와 같은 규칙.
+- 한 트윗의 영상 중 하나라도 mp4가 없으면 직접 받기를 쓰지 않고 전부 yt-dlp에 맡긴다(일부만 저장되는 것을 막는다).
+- 한계: 음악 추출(m4a·mp3)은 여전히 yt-dlp를 쓴다. 민감한 콘텐츠·보호 계정처럼 임베드 API가 미디어를 주지 않는 트윗도 yt-dlp로 간다.
+- 추가 도메인: `video.twimg.com`(X 영상 CDN). 이전에도 yt-dlp가 접속하던 곳이지만 이제 앱의 OkHttp가 직접 접속한다. CLAUDE.md 1-2 규칙에 따른 기록.
+- 대안: yt-dlp에 `--extractor-args twitter:api=syndication`을 주는 방법. 원인 오류를 확인하지 못한 상태라 yt-dlp 경로 자체를 피하는 쪽을 골랐다.
+
+### 이 PC에 Android SDK 설치
+- `%LOCALAPPDATA%\Android\Sdk`에 cmdline-tools(16111833, SHA-1 확인), `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`를 설치했다. 이제 로컬에서 `./gradlew test assembleDebug`가 된다.
+- `local.properties`의 경로는 `C:/Users/...`처럼 슬래시로 쓴다. 역슬래시는 properties 이스케이프로 사라진다.

@@ -12,6 +12,7 @@ object DownloadRequestCodec {
     const val KEY_PRESET = "preset"
     const val KEY_IMAGE_URLS = "image_urls"
     const val KEY_IMAGE_EXTENSIONS = "image_extensions"
+    const val KEY_DIRECT_VIDEO_URLS = "direct_video_urls"
 
     fun encode(request: DownloadRequest): Map<String, Any> = mapOf(
         KEY_URL to request.url,
@@ -19,6 +20,7 @@ object DownloadRequestCodec {
         KEY_PRESET to request.preset.name,
         KEY_IMAGE_URLS to request.images.map { it.url }.toTypedArray(),
         KEY_IMAGE_EXTENSIONS to request.images.map { it.extension }.toTypedArray(),
+        KEY_DIRECT_VIDEO_URLS to request.directVideoUrls.toTypedArray(),
     )
 
     fun decode(values: Map<String, Any?>): DownloadRequest? {
@@ -29,6 +31,8 @@ object DownloadRequestCodec {
         val urls = (values[KEY_IMAGE_URLS] as? Array<*>)?.filterIsInstance<String>().orEmpty()
         val extensions = (values[KEY_IMAGE_EXTENSIONS] as? Array<*>)?.filterIsInstance<String>().orEmpty()
         if (urls.size != extensions.size) return null
-        return DownloadRequest(url, title, preset, urls.zip(extensions) { u, e -> RemoteImage(u, e) })
+        val directVideoUrls = (values[KEY_DIRECT_VIDEO_URLS] as? Array<*>)?.filterIsInstance<String>().orEmpty()
+        val images = urls.zip(extensions) { u, e -> RemoteImage(u, e) }
+        return DownloadRequest(url, title, preset, images, directVideoUrls)
     }
 }

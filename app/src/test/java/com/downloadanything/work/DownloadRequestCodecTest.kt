@@ -28,6 +28,25 @@ class DownloadRequestCodecTest {
     }
 
     @Test
+    fun `round trips request with direct video urls`() {
+        val request = DownloadRequest(
+            url = "https://x.com/u/status/1",
+            title = "영상 트윗",
+            preset = DownloadPreset.BEST_VIDEO,
+            images = emptyList(),
+            directVideoUrls = listOf("https://video.twimg.com/a.mp4", "https://video.twimg.com/b.mp4"),
+        )
+        assertEquals(request, DownloadRequestCodec.decode(DownloadRequestCodec.encode(request)))
+    }
+
+    @Test
+    fun `old input without direct video urls still decodes`() {
+        val values = DownloadRequestCodec.encode(DownloadRequest("https://youtu.be/a", "영상", DownloadPreset.BEST_VIDEO, emptyList()))
+            .minus(DownloadRequestCodec.KEY_DIRECT_VIDEO_URLS)
+        assertEquals(emptyList<String>(), DownloadRequestCodec.decode(values)?.directVideoUrls)
+    }
+
+    @Test
     fun `missing or broken values decode to null`() {
         assertNull(DownloadRequestCodec.decode(emptyMap()))
         val broken = DownloadRequestCodec.encode(DownloadRequest("https://a", "t", DownloadPreset.BEST_VIDEO, emptyList()))

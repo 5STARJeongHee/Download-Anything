@@ -13,7 +13,32 @@
   },
   {
    "type": "video",
-   "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg"
+   "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1577855447914409984/pu/img/5V20pjPHBu3nz6jb.jpg",
+   "video_info": {
+    "aspect_ratio": [4, 5],
+    "duration_millis": 30030,
+    "variants": [
+     {
+      "content_type": "application/x-mpegURL",
+      "url": "https://video.twimg.com/ext_tw_video/1577855447914409984/pu/pl/fWr-j7UHJPKp0D1w.m3u8?tag=12"
+     },
+     {
+      "bitrate": 632000,
+      "content_type": "video/mp4",
+      "url": "https://video.twimg.com/ext_tw_video/1577855447914409984/pu/vid/320x400/HYijkv-UtUL9d8qo.mp4?tag=12"
+     },
+     {
+      "bitrate": 950000,
+      "content_type": "video/mp4",
+      "url": "https://video.twimg.com/ext_tw_video/1577855447914409984/pu/vid/480x600/7-QYdEW4oBKK4vSr.mp4?tag=12"
+     },
+     {
+      "bitrate": 2176000,
+      "content_type": "video/mp4",
+      "url": "https://video.twimg.com/ext_tw_video/1577855447914409984/pu/vid/720x900/Dn3XhZkvCK_gMg0d.mp4?tag=12"
+     }
+    ]
+   }
   }
  ]
 }

@@ -1,4 +1,4 @@
-// X 임베드 API로 트윗의 사진을 찾는 추출기(yt-dlp는 X 사진을 받지 못한다)
+// X 임베드 API로 트윗의 사진과 영상 mp4 주소를 찾는 추출기(yt-dlp는 X 사진을 받지 못한다)
 package com.downloadanything.data.image
 
 import com.downloadanything.domain.model.FailureReason

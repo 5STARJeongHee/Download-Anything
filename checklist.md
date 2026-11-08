@@ -34,6 +34,7 @@
 - [x] 에뮬레이터(x86_64, 4KB, ffmpeg 있음) 확인: YouTube 720p 합치기, mp3 변환, m4a, 다운로드 취소(프로세스 종료·임시 폴더 삭제)
 - [x] QuickJS로 YouTube JS 챌린지 처리 확인 (경고 없음, 최대 2160p)
 - [ ] **실제 Pinterest 이미지 핀 확인** (테스트는 합성 샘플뿐, 실제 이미지 핀 주소를 못 구함)
+- [ ] X 영상을 임베드 API mp4로 직접 받기(yt-dlp X 추출기 실패 우회, 실패 시 yt-dlp 폴백) + 테스트 (`./gradlew test assembleDebug` 통과, 테스트 75개. 실기기 미확인)
 - [ ] **arm64 실기기 확인** (사용자 휴대폰): 위 항목 전체, 특히 기기 페이지 크기에 따른 ffmpeg 유무
 - [x] 릴리스 서명 설정(Gradle, GitHub Actions 워크플로)
 - [ ] GitHub Secrets 등록 후 첫 태그(v0.1.0)로 릴리스 APK 업로드 확인

@@ -5,6 +5,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.downloadanything.DownloadAnythingApp
+import com.downloadanything.domain.DirectVideoSelector
 import com.downloadanything.domain.ErrorClassifier
 import com.downloadanything.domain.PresetPolicy
 import com.downloadanything.domain.model.DownloadPreset
@@ -63,6 +64,7 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
             title = ready.info.title,
             preset = preset,
             images = if (preset == DownloadPreset.IMAGE) ready.info.images else emptyList(),
+            directVideoUrls = DirectVideoSelector.urlsFor(ready.info.directVideos, preset),
         )
         DownloadScheduler.enqueue(app, request)
         mutableState.value = LinkUiState.Started(ready.info.title, preset)

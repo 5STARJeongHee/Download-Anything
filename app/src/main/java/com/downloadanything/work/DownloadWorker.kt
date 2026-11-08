@@ -16,10 +16,14 @@ import com.downloadanything.domain.model.DownloadPreset
 import com.downloadanything.domain.model.DownloadRequest
 import com.downloadanything.domain.model.FailureReason
 import com.downloadanything.domain.model.MediaUnavailableException
+import com.downloadanything.domain.model.RemoteImage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 
 class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -68,17 +72,32 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
     }
 
     private suspend fun fetch(request: DownloadRequest, workDir: File): List<File> {
-        if (request.preset == DownloadPreset.IMAGE) {
-            app.imageDownloader.download(request.images, request.title, workDir) { done, total ->
-                report(request.title, done * PERCENT / total.toFloat())
-            }
-        } else {
-            downloadWithEngine(request, workDir)
+        when {
+            request.preset == DownloadPreset.IMAGE -> downloadFiles(request.images, request.title, workDir)
+            request.directVideoUrls.isNotEmpty() -> downloadDirectOrEngine(request, workDir)
+            else -> downloadWithEngine(request, workDir)
         }
         val names = workDir.listFiles()?.filter { it.isFile }?.map { it.name }.orEmpty()
         val selected = DownloadOutputs.select(names, request.preset)
         if (selected.isEmpty()) throw MediaUnavailableException(FailureReason.NO_MEDIA, "결과 파일 없음: $names")
         return selected.map { File(workDir, it) }
+    }
+
+    private suspend fun downloadFiles(files: List<RemoteImage>, title: String, workDir: File) {
+        app.imageDownloader.download(files, title, workDir) { done, total -> report(title, done * PERCENT / total.toFloat()) }
+    }
+
+    // 임베드 API의 mp4 주소가 막히거나 만료되면 yt-dlp로 한 번 더 시도한다.
+    private suspend fun downloadDirectOrEngine(request: DownloadRequest, workDir: File) {
+        try {
+            downloadFiles(request.directVideoUrls.map { RemoteImage(it, DIRECT_VIDEO_EXTENSION) }, request.title, workDir)
+        } catch (e: IOException) {
+            // 취소로 연결이 끊긴 경우에는 yt-dlp로 넘어가지 않는다.
+            currentCoroutineContext().ensureActive()
+            if (BuildConfig.DEBUG) Log.w(TAG, "mp4 직접 받기 실패, yt-dlp로 다시 시도: ${request.url}", e)
+            workDir.listFiles()?.forEach { it.deleteRecursively() }
+            downloadWithEngine(request, workDir)
+        }
     }
 
     private suspend fun downloadWithEngine(request: DownloadRequest, workDir: File) {
@@ -107,6 +126,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
         const val KEY_SAVED_COUNT = "saved_count"
         const val KEY_FAILURE = "failure"
         private const val WORK_DIR_NAME = "downloads"
+        private const val DIRECT_VIDEO_EXTENSION = "mp4"
         private const val PERCENT = 100
         private const val TAG = "DownloadWorker"
     }
