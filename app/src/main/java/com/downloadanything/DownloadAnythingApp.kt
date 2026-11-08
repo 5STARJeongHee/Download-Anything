@@ -5,6 +5,7 @@ import android.app.Application
 import android.util.Log
 import androidx.core.content.edit
 import com.downloadanything.data.ExtractorRouter
+import com.downloadanything.data.account.AccountStore
 import com.downloadanything.data.image.ImageDownloader
 import com.downloadanything.data.image.XImageExtractor
 import com.downloadanything.data.storage.MediaStoreSaver
@@ -28,6 +29,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class DownloadAnythingApp : Application() {
@@ -46,7 +48,10 @@ class DownloadAnythingApp : Application() {
             .build()
     }
     val engine: YtDlpEngine by lazy { YoutubeDlAndroidEngine(this) }
-    val extractorRouter: ExtractorRouter by lazy { ExtractorRouter(YtDlpExtractor(engine), XImageExtractor(httpClient)) }
+    val accountStore: AccountStore by lazy { AccountStore(File(noBackupFilesDir, ACCOUNTS_DIR_NAME)) }
+    val extractorRouter: ExtractorRouter by lazy {
+        ExtractorRouter(YtDlpExtractor(engine, accountStore::ytDlpArgs), XImageExtractor(httpClient))
+    }
     val imageDownloader: ImageDownloader by lazy { ImageDownloader(httpClient) }
     val mediaStoreSaver: MediaStoreSaver by lazy { MediaStoreSaver(this) }
 
@@ -143,6 +148,7 @@ class DownloadAnythingApp : Application() {
         const val TAG = "DownloadAnythingApp"
         const val PREFS_NAME = "engine"
         const val KEY_LAST_UPDATED_AT = "last_updated_at"
+        const val ACCOUNTS_DIR_NAME = "accounts"
         const val CONNECT_TIMEOUT_SECONDS = 15L
         const val READ_TIMEOUT_SECONDS = 30L
 

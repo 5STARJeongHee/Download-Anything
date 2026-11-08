@@ -26,10 +26,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.downloadanything.domain.UrlParser
+import com.downloadanything.ui.account.openAccountConnect
 import com.downloadanything.ui.theme.DownloadAnythingTheme
 import kotlinx.coroutines.delay
 
@@ -57,6 +59,7 @@ private const val CLOSE_AFTER_START_MILLIS = 1_200L
 @Composable
 private fun ShareSheet(viewModel: LinkViewModel, hasLink: Boolean, onDismiss: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     LaunchedEffect(state) {
         if (state is LinkUiState.Started) {
             delay(CLOSE_AFTER_START_MILLIS)
@@ -88,6 +91,7 @@ private fun ShareSheet(viewModel: LinkViewModel, hasLink: Boolean, onDismiss: ()
                         onDownload = viewModel::download,
                         onRetry = viewModel::retry,
                         onRetryAfterUpdate = viewModel::retryAfterEngineUpdate,
+                        onConnectAccount = { openAccountConnect(context, it) },
                     )
                 }
                 TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) { Text("닫기") }

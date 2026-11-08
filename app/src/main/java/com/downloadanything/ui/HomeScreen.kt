@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.downloadanything.domain.UrlParser
+import com.downloadanything.ui.account.AccountsActivity
+import com.downloadanything.ui.account.openAccountConnect
 import com.downloadanything.domain.model.EngineState
 
 @Composable
@@ -41,6 +44,8 @@ fun HomeScreen(viewModel: LinkViewModel, onUpdateEngine: () -> Unit, modifier: M
     val engineState by viewModel.engineState.collectAsStateWithLifecycle()
     var input by rememberSaveable { mutableStateOf("") }
     val link = remember(input) { UrlParser.parse(input) }
+    val context = LocalContext.current
+    val connectedAccounts by viewModel.connectedAccounts.collectAsStateWithLifecycle()
 
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 28.dp),
@@ -66,10 +71,12 @@ fun HomeScreen(viewModel: LinkViewModel, onUpdateEngine: () -> Unit, modifier: M
             onDownload = viewModel::download,
             onRetry = viewModel::retry,
             onRetryAfterUpdate = viewModel::retryAfterEngineUpdate,
+            onConnectAccount = { openAccountConnect(context, it) },
         )
         DownloadList()
         Spacer(Modifier.height(8.dp))
         EngineRow(engineState, onUpdateEngine)
+        AccountsRow(connectedAccounts.size) { context.startActivity(AccountsActivity.intent(context)) }
         Text(
             "개인 용도로만 사용하세요. 저작권과 각 서비스 약관을 지킬 책임은 사용자에게 있습니다.",
             style = MaterialTheme.typography.bodySmall,
@@ -98,4 +105,17 @@ private fun engineSummary(state: EngineState.Ready): String = buildString {
     append("yt-dlp ${state.version ?: "?"}")
     if (!state.isFfmpegAvailable) append(" · ffmpeg 없음(합치기·mp3 불가)")
     if (state.isUpdateFailed) append(" · 업데이트 실패")
+}
+
+@Composable
+private fun AccountsRow(connectedCount: Int, onOpen: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            if (connectedCount == 0) "연결된 계정 없음" else "연결된 계정 ${connectedCount}개",
+            Modifier.weight(1f),
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp,
+        )
+        TextButton(onClick = onOpen) { Text("계정 연결") }
+    }
 }

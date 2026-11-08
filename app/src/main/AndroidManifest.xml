@@ -37,6 +37,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.account.AccountsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.account.AccountLoginActivity"
+            android:exported="false" />
+
         <!-- WorkManager의 foreground 서비스에 타입을 지정한다(Android 14+ 필수). -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"

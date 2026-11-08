@@ -20,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 sealed interface LinkUiState {
@@ -38,6 +39,18 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
 
     val state: StateFlow<LinkUiState> = mutableState.asStateFlow()
     val engineState = app.engineState
+    val connectedAccounts = app.accountStore.connected
+
+    init {
+        // 로그인 필요로 실패한 뒤 그 플랫폼 계정을 연결(또는 다시 로그인)하면 바로 다시 조회한다.
+        viewModelScope.launch {
+            app.accountStore.revision.drop(1).collect {
+                val failed = state.value as? LinkUiState.Failed ?: return@collect
+                val isConnected = failed.link.platform in connectedAccounts.value
+                if (isConnected && failed.reason == FailureReason.LOGIN_REQUIRED) load(failed.link)
+            }
+        }
+    }
 
     fun load(link: ParsedLink) {
         loadJob?.cancel()

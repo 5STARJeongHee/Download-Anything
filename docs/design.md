@@ -81,6 +81,28 @@ com.downloadanything
 5. 앱 전용 폴더(`cacheDir/downloads/{id}`)에 받음 → MediaStore로 복사(영상 `Movies/DownloadAnything`, 음악 `Music/DownloadAnything`, 이미지 `Pictures/DownloadAnything`) → 임시 파일 삭제.
 6. 완료 알림을 누르면 파일 열기.
 
+### 계정 연결(쿠키)
+
+로그인해야 보이는 콘텐츠(YouTube 연령 제한, X 민감한 트윗, Instagram 등)를 위해 플랫폼별로 계정을 "연결"해 둔다. 평소에는 로그인 없이 동작하고, 연결된 플랫폼의 링크에만 yt-dlp `--cookies`를 붙인다.
+
+```
+AccountCatalog(domain)   플랫폼별 연결 방법·쿠키 도메인·로그인 확인용 쿠키 이름
+AccountCookies(domain)   WebView 쿠키 헤더 / 가져온 cookies.txt → 플랫폼 도메인만 남긴 Netscape 형식
+AccountStore(data)       noBackupFilesDir/accounts/{PLATFORM}.txt 저장·삭제, 연결 목록 StateFlow
+YtDlpExtractor·DownloadWorker   연결된 플랫폼이면 --cookies 인자 추가
+```
+
+| 플랫폼 | 연결 방법 | 로그인 확인 쿠키 |
+|---|---|---|
+| X | 앱 안 로그인(WebView) 또는 cookies.txt | `auth_token` |
+| Instagram | 앱 안 로그인 또는 cookies.txt | `sessionid` |
+| TikTok | 앱 안 로그인 또는 cookies.txt | `sessionid`, `sid_tt` |
+| YouTube | cookies.txt만 (Google이 WebView 로그인을 막는다) | `SAPISID` 등 |
+
+- 진입점 두 곳: 홈 하단 "계정 연결" 화면(전체 관리), 실패 화면의 "{플랫폼} 계정 연결" 버튼(로그인 필요로 실패했을 때만). 연결되면 실패했던 링크를 자동으로 다시 조회한다.
+- 쿠키 파일은 백업 제외 폴더에 두고 로그에 남기지 않는다. 연결 해제는 파일과 WebView 쿠키를 함께 지운다.
+- 플랫폼 추가는 `AccountCatalog`에 항목 하나를 더하면 된다. Pinterest는 공개 콘텐츠가 대부분이라 처음 목록에서 뺐다.
+
 ### yt-dlp 업데이트
 - 앱 시작 시 `init()`을 백그라운드 코루틴에서 실행(수 초 걸림). 끝나기 전 요청은 대기.
 - 하루 1회 이하로 `updateYoutubeDL(NIGHTLY)` 자동 실행, 설정 화면에 수동 버튼.
@@ -93,6 +115,8 @@ com.downloadanything
 | 공유 하단 시트 | 썸네일, 제목, 프리셋 버튼, 다운로드 버튼. 앱 본체를 열지 않음 |
 | 홈 | 큰 URL 입력칸(클립보드 붙여넣기 버튼), 진행 중 작업 목록 |
 | 설정 | 별도 화면 없이 홈 하단에 yt-dlp 버전·ffmpeg 유무·업데이트 버튼·법적 고지 |
+| 계정 연결 | 플랫폼별 연결 상태, 로그인·cookies.txt 가져오기·연결 해제 (홈 하단에서 진입) |
+| 로그인 | 플랫폼 로그인 페이지를 띄운 WebView와 "완료" 버튼 |
 
 **디자인 방향**: "도구"답게 단단한 느낌. 진한 잉크색 배경에 형광 라임 강조색 하나, 굵은 산세리프 제목과 고정폭 숫자(진행률·용량). 진행률 막대를 화면의 주인공으로 둔다. 다크/라이트 둘 다 지원.
 

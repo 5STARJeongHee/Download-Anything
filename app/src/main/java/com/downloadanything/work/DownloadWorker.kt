@@ -12,6 +12,7 @@ import com.downloadanything.data.ytdlp.EngineException
 import com.downloadanything.domain.DownloadOutputs
 import com.downloadanything.domain.ErrorClassifier
 import com.downloadanything.domain.FormatSelector
+import com.downloadanything.domain.UrlParser
 import com.downloadanything.domain.model.DownloadPreset
 import com.downloadanything.domain.model.DownloadRequest
 import com.downloadanything.domain.model.FailureReason
@@ -105,7 +106,8 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
         val args = FormatSelector.ytDlpArgs(request.preset, engine.isFfmpegAvailable)
             ?: throw MediaUnavailableException(FailureReason.NO_MEDIA, "이 기기에서 만들 수 없는 형식: ${request.preset}")
         try {
-            app.engine.download(request.url, args, workDir) { percent, _ -> report(request.title, percent) }
+            val cookieArgs = app.accountStore.ytDlpArgs(UrlParser.detectPlatform(request.url))
+            app.engine.download(request.url, args + cookieArgs, workDir) { percent, _ -> report(request.title, percent) }
         } catch (e: EngineException) {
             throw MediaUnavailableException(ErrorClassifier.classify(e.message), e.message, e)
         }

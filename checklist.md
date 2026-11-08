@@ -44,5 +44,6 @@
 - [ ] 다운로드 기록(Room)
 - [ ] 대기열, 동시 다운로드 수 설정
 - [ ] 플레이리스트
-- [ ] WebView 로그인 → 쿠키 파일 → `--cookies` (Instagram, 연령 제한)
+- [x] 계정 연결(플랫폼 공통): X·Instagram·TikTok 앱 안 로그인, YouTube 포함 cookies.txt 가져오기, 연결된 플랫폼에만 `--cookies` + 테스트
+- [ ] **계정 연결 실기기 확인**: X 로그인 후 민감한 트윗 영상, Instagram 게시물, YouTube 연령 제한 영상
 - [ ] YouTube PO 토큰

@@ -114,10 +114,20 @@
 
 ### 이 PC에 Android SDK 설치
 - `%LOCALAPPDATA%\Android\Sdk`에 cmdline-tools(16111833, SHA-1 확인), `platforms;android-37.0`, `build-tools;37.0.0`, `platform-tools`를 설치했다. 이제 로컬에서 `./gradlew test assembleDebug`가 된다.
-- `local.properties`의 경로는 `C:/Users/...`처럼 슬래시로 쓴다. 역슬래시는 properties 이스케이프로 사라진다.
+- `local.properties`는 `sdk.dir=C\:\\Users\\...`처럼 콜론과 역슬래시를 이스케이프해서 쓴다. 이스케이프하지 않은 역슬래시는 사라져 SDK를 못 찾고, 슬래시로 쓰면 lint(PropertyEscape)가 실패한다.
 
 ### 로그아웃 상태에 숨겨진 X 트윗은 "로그인 필요"로 안내한다
 - 증상(v0.1.2 실기기): 특정 트윗에서 "받을 수 있는 영상·음악·이미지를 찾지 못했습니다" + 엔진 업데이트 버튼이 떴다.
 - 원인: 임베드 API가 `{"__typename":"TweetTombstone","tombstone":{}}`만 주고, oEmbed는 403 "not authorized to see this status"를 줬다. 민감한 콘텐츠·연령 제한처럼 로그인해야 보이는 트윗이다. yt-dlp도 미디어 없이 끝나 NO_MEDIA로 분류됐다.
 - 결정: 파서가 tombstone이면 `LOGIN_REQUIRED`를 던지고, 라우터는 yt-dlp가 미디어를 못 찾거나 실패하면(네트워크 오류 제외) `LOGIN_REQUIRED`로 바꾼다. yt-dlp의 "NSFW tweet requires authentication"도 같은 분류로 넣었다.
 - 이런 트윗을 실제로 받으려면 Phase 2의 로그인 쿠키(`--cookies`)가 필요하다. 외부 중계 서비스(fxtwitter 등)는 네트워크 대상 제한 규칙 때문에 쓰지 않는다.
+
+### 계정 연결은 플랫폼 공통 기능으로 만든다 (Phase 2 앞당김)
+- 결정: X 전용 로그인이 아니라 `AccountCatalog`에 등록된 플랫폼(X, Instagram, TikTok, YouTube)을 같은 화면·같은 흐름으로 연결한다. 평소엔 로그인 없이 쓰고, "로그인 필요"로 실패했을 때만 연결을 안내한다.
+- 쿠키 얻는 법: 다른 앱(X 앱 등)의 로그인 정보는 Android 샌드박스 때문에 읽을 수 없다. 앱 안 WebView 로그인 후 `CookieManager`에서 읽거나, PC 브라우저에서 내보낸 cookies.txt를 가져온다.
+- YouTube는 Google이 WebView 로그인을 막으므로(disallowed_useragent) cookies.txt만 지원한다.
+- `CookieManager.getCookie()`는 이름=값만 준다. Netscape 형식으로 쓸 때 도메인은 `.{플랫폼 도메인}`, 경로 `/`, secure TRUE, 만료는 저장 시점 + 1년으로 채운다. yt-dlp는 `--cookies` 파일을 실행 끝에 다시 저장하므로 갱신된 쿠키가 이어진다.
+- WebView는 `; wv` 표시를 뺀 User-Agent를 쓴다. 일부 사이트가 WebView를 "지원하지 않는 브라우저"로 막기 때문이다.
+- 네트워크 대상: 로그인 화면은 사용자가 직접 조작하는 WebView라서 각 플랫폼의 로그인 페이지와 그 페이지가 부르는 인증·CDN·캡차 도메인에 접속한다. 앱 코드가 직접 부르는 새 도메인은 없다. http(s)가 아닌 주소(intent:// 등)로의 이동은 막는다.
+- 쿠키 파일은 `noBackupFilesDir/accounts/`(앱 전용, 백업 제외, `allowBackup=false`). 로그에 쿠키 값을 남기지 않는다.
+- 대안: 외부 중계 서비스(fxtwitter 등)는 네트워크 대상 규칙 위반이라 제외. 루팅해서 X 앱 토큰 읽기는 불가·부적절.

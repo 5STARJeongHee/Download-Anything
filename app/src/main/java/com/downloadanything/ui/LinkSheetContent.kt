@@ -26,8 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.downloadanything.domain.AccountCatalog
 import com.downloadanything.domain.model.DownloadPreset
+import com.downloadanything.domain.model.FailureReason
 import com.downloadanything.domain.model.MediaInfo
+import com.downloadanything.domain.model.Platform
 
 private const val THUMBNAIL_RATIO = 16f / 9f
 
@@ -37,6 +40,7 @@ fun LinkSheetContent(
     onDownload: (DownloadPreset) -> Unit,
     onRetry: () -> Unit,
     onRetryAfterUpdate: () -> Unit,
+    onConnectAccount: (Platform) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -44,7 +48,7 @@ fun LinkSheetContent(
             LinkUiState.Idle -> Unit
             is LinkUiState.Loading -> Loading(state.link.platform.label())
             is LinkUiState.Ready -> ReadyContent(state.info, state.presets, onDownload)
-            is LinkUiState.Failed -> FailedContent(state, onRetry, onRetryAfterUpdate)
+            is LinkUiState.Failed -> FailedContent(state, onRetry, onRetryAfterUpdate, onConnectAccount)
             is LinkUiState.Started -> Text(
                 "다운로드를 시작했습니다. 진행 상황은 알림에서 볼 수 있습니다.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -99,10 +103,20 @@ private fun ReadyContent(info: MediaInfo, presets: List<DownloadPreset>, onDownl
 }
 
 @Composable
-private fun FailedContent(state: LinkUiState.Failed, onRetry: () -> Unit, onRetryAfterUpdate: () -> Unit) {
+private fun FailedContent(
+    state: LinkUiState.Failed,
+    onRetry: () -> Unit,
+    onRetryAfterUpdate: () -> Unit,
+    onConnectAccount: (Platform) -> Unit,
+) {
+    val platform = state.link.platform
+    val canConnect = state.reason == FailureReason.LOGIN_REQUIRED && AccountCatalog.spec(platform) != null
     Text(state.reason.userMessage, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
     Text(state.link.url, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, maxLines = 2)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (canConnect) {
+            Button(onClick = { onConnectAccount(platform) }) { Text("${platform.label()} 계정 연결") }
+        }
         if (state.reason.suggestsEngineUpdate) {
             Button(onClick = onRetryAfterUpdate) { Text("엔진 업데이트 후 다시 시도") }
         }
