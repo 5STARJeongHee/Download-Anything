@@ -28,8 +28,8 @@ android {
         // MediaStore RELATIVE_PATH(API 29)로 저장해 구버전 저장 권한 분기를 없앤다.
         minSdk = 29
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.1.3"
+        versionCode = 5
+        versionName = "0.1.4"
 
         // youtubedl-android는 ABI마다 Python·ffmpeg를 넣는다. 개인용이라 arm64만 빌드한다.
         ndk { abiFilters += "arm64-v8a" }
