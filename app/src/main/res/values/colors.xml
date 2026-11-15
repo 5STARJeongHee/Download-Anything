@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 앱 테마(Theme.kt)의 Ink·Lime과 같은 색 -->
+    <color name="ic_launcher_background">#FF0E1116</color>
+    <color name="ic_launcher_foreground">#FFC6FF3D</color>
+</resources>
